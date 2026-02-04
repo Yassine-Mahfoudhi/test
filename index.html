@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ✅ -->
   <title>Important Question 💖</title>
+
   <style>
     body {
-      height: 100vh;
+      min-height: 100vh; /* ✅ */
       margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       background:
         linear-gradient(135deg, rgba(255, 154, 158, 0.45), rgba(254, 207, 239, 0.55)),
-        url("30b67d98-c4cd-46a3-9823-f1c3c0881261.png") center/cover no-repeat fixed;
+        url("30b67d98-c4cd-46a3-9823-f1c3c0881261.png") center / cover no-repeat; /* ✅ removed fixed */
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Arial', sans-serif;
       color: #4a1b2b;
-      overflow: hidden;
+      overflow-x: hidden; /* ✅ */
     }
 
     .floating-heart {
@@ -44,20 +46,22 @@
         0 0 0 1px rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(10px);
       border: 2px solid rgba(255, 180, 203, 0.9);
+      max-width: 92%; /* ✅ */
     }
 
-    .card::before {
+    .card::before,
+    .card::after {
       content: "🌹";
       position: absolute;
       font-size: 42px;
+    }
+
+    .card::before {
       left: -18px;
       top: -18px;
     }
 
     .card::after {
-      content: "🌹";
-      position: absolute;
-      font-size: 42px;
       right: -18px;
       bottom: -18px;
       transform: scaleX(-1);
@@ -86,14 +90,13 @@
 
     .buttons {
       position: relative;
-      display: inline-flex;
+      display: flex; /* ✅ */
       align-items: center;
       justify-content: center;
       gap: 18px;
-      min-width: 320px;
       min-height: 70px;
       margin-top: 10px;
-      padding: 0 40px;
+      width: 100%;
     }
 
     button {
@@ -102,7 +105,6 @@
       border: none;
       border-radius: 999px;
       cursor: pointer;
-      margin: 0;
       transition: all 0.2s ease;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
       font-weight: 600;
@@ -111,8 +113,7 @@
     #yes {
       background: linear-gradient(135deg, #ff4b8b, #ff6fb1);
       color: white;
-      transform: scale(1);
-      margin-right: -200px; /* 👈 moves Yes to the right */
+      margin-left: 40px; /* ✅ correct way to move Yes right */
     }
 
     #yes:hover {
@@ -124,132 +125,101 @@
       background: linear-gradient(135deg, #f44336, #ff7961);
       color: white;
       position: absolute;
+      left: 10%;
       top: 50%;
-      left: 12%;
       transform: translate(-50%, -50%);
       min-width: 80px;
       white-space: nowrap;
     }
-  </style>
-</head>
-<body>
 
-  <!-- Replace "music.mp3" with your own song file placed next to this HTML -->
-  <audio id="bg-music" src="YTDown.com_YouTube_Ed-Sheeran-Perfect-Duet-with-Beyonce-Off_Media_817P8W8-mGE_006_144p.mp3" loop></audio>
+    /* 📱 MOBILE OPTIMIZATION */
+    @media (max-width: 600px) {
+      .card {
+        padding: 32px 22px;
+        border-radius: 22px;
+      }
 
-  <div class="card">
-    <h1>Will you be my wife and stay with me for the rest of our lives? 💍❤️</h1>
-    <div class="subtitle">
-      <span>Try pressing “No”</span>
-      <span>😈</span>
-    </div>
-    <div class="buttons">
-      <button id="yes" onclick="yesClicked()">Yes 💖</button>
-      <button id="no">No 😢</button>
-    </div>
-  </div>
+      h1 {
+        font-size: 22px;
+      }
 
-  <script>
-    // Floating background hearts
-    for (let i = 0; i < 18; i++) {
-      const h = document.createElement("div");
-      h.className = "floating-heart";
-      h.textContent = "❤";
-      h.style.left = Math.random() * 100 + "vw";
-      h.style.bottom = Math.random() * -40 + "vh";
-      h.style.animationDelay = (Math.random() * 10).toFixed(2) + "s";
-      h.style.fontSize = 14 + Math.random() * 18 + "px";
-      document.body.appendChild(h);
-    }
+      .subtitle {
+        font-size: 14px;
+      }
 
-    const card = document.querySelector(".card");
-    const buttonsWrapper = document.querySelector(".buttons");
-    const noBtn = document.getElementById("no");
-    const yesBtn = document.getElementById("yes");
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
 
-    let escapeCount = 0;
-
-    function moveNoButton() {
-      const wrapperRect = buttonsWrapper.getBoundingClientRect();
-      const noRect = noBtn.getBoundingClientRect();
-
-      const maxX = wrapperRect.width - noRect.width;
-      const maxY = wrapperRect.height - noRect.height;
-
-      // Random position inside the buttons wrapper
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
-
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
-    }
-
-    function mischievousEffects() {
-      escapeCount++;
-
-      // Shrink "No" a bit each time, but keep it visible
-      const noScale = Math.max(0.4, 1 - escapeCount * 0.06);
-      noBtn.style.transform = `translate(-50%, -50%) scale(${noScale})`;
-
-      // Make "Yes" larger and redder each time
-      const yesScale = 1 + Math.min(0.4, escapeCount * 0.08);
-      yesBtn.style.transform = `scale(${yesScale})`;
-      yesBtn.style.background = "linear-gradient(135deg, #ff1744, #ff5252)";
-      yesBtn.style.boxShadow = "0 12px 30px rgba(255, 23, 68, 0.5)";
-    }
-
-    noBtn.addEventListener("mousemove", () => {
-      moveNoButton();
-      mischievousEffects();
-    });
-
-    // Background music – starts on first interaction (to avoid browser autoplay blocking)
-    const bgMusic = document.getElementById("bg-music");
-    let musicStarted = false;
-
-    function startMusic() {
-      if (musicStarted || !bgMusic) return;
-      bgMusic.volume = 0.6;
-      bgMusic.play().then(() => {
-        musicStarted = true;
-      }).catch(() => {
-        // If it fails (e.g. strict autoplay), it will try again on the next interaction
-      });
-    }
-
-    document.body.addEventListener("click", startMusic);
-    document.body.addEventListener("keydown", startMusic);
-
-    function yesClicked() {
-      document.body.innerHTML = `
-        <div style="
-          height:100vh;
-          display:flex;
-          justify-content:center;
-          align-items:center;
-          background:
-            radial-gradient(circle at 10% 20%, rgba(255,192,203,0.9), transparent 60%),
-            radial-gradient(circle at 80% 10%, rgba(255,182,193,0.8), transparent 55%),
-            radial-gradient(circle at 20% 80%, rgba(255,105,180,0.7), transparent 55%),
-            linear-gradient(135deg,#ff9a9e,#fecfef);
-          font-family:'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Arial', sans-serif;
-          text-align:center;
-          color:#b6114b;">
-          <div>
-            <h1 style="font-size:34px; margin-bottom:10px;">YAAAY 💍❤️</h1>
-            <p style="font-size:22px;">I love you forever 😘</p>
-            <p style="margin-top:18px; font-size:16px;">You made the best decision, my love 💖</p>
-          </div>
-        </div>
-      `;
-
-      // keep the music playing after saying yes
-      if (bgMusic && !musicStarted) {
-        startMusic();
+      #yes {
+        margin-left: 25px; /* ✅ smaller offset on phone */
       }
     }
-  </script>
+  </style>
+</head>
+
+<body>
+
+<audio id="bg-music" src="YTDown.com_YouTube_Ed-Sheeran-Perfect-Duet-with-Beyonce-Off_Media_817P8W8-mGE_006_144p.mp3" loop></audio>
+
+<div class="card">
+  <h1>Will you be my wife and stay with me for the rest of our lives? 💍❤️</h1>
+  <div class="subtitle">
+    <span>Try pressing “No”</span><span>😈</span>
+  </div>
+  <div class="buttons">
+    <button id="yes" onclick="yesClicked()">Yes 💖</button>
+    <button id="no">No 😢</button>
+  </div>
+</div>
+
+<script>
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement("div");
+    h.className = "floating-heart";
+    h.textContent = "❤";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.bottom = Math.random() * -40 + "vh";
+    h.style.animationDelay = Math.random() * 10 + "s";
+    h.style.fontSize = 14 + Math.random() * 18 + "px";
+    document.body.appendChild(h);
+  }
+
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const wrapper = document.querySelector(".buttons");
+  let escapeCount = 0;
+
+  function moveNo() {
+    const w = wrapper.getBoundingClientRect();
+    const n = noBtn.getBoundingClientRect();
+    noBtn.style.left = Math.random() * (w.width - n.width) + "px";
+    noBtn.style.top = Math.random() * (w.height - n.height) + "px";
+  }
+
+  noBtn.addEventListener("mousemove", () => {
+    escapeCount++;
+    moveNo();
+    noBtn.style.transform = `scale(${Math.max(0.4, 1 - escapeCount * 0.06)})`;
+    yesBtn.style.transform = `scale(${1 + Math.min(0.4, escapeCount * 0.08)})`;
+  });
+
+  const music = document.getElementById("bg-music");
+  document.body.addEventListener("click", () => music.play().catch(()=>{}));
+
+  function yesClicked() {
+    document.body.innerHTML = `
+      <div style="height:100vh;display:flex;justify-content:center;align-items:center;
+      background:linear-gradient(135deg,#ff9a9e,#fecfef);text-align:center;color:#b6114b;">
+        <div>
+          <h1>YAAAY 💍❤️</h1>
+          <p style="font-size:22px;">I love you forever 😘</p>
+        </div>
+      </div>`;
+    music.play().catch(()=>{});
+  }
+</script>
 
 </body>
 </html>
-
