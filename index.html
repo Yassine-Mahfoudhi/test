@@ -10,40 +10,125 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      font-family: 'Arial', sans-serif;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255, 192, 203, 0.9), transparent 60%),
+        radial-gradient(circle at 80% 10%, rgba(255, 182, 193, 0.8), transparent 55%),
+        radial-gradient(circle at 20% 80%, rgba(255, 105, 180, 0.7), transparent 55%),
+        linear-gradient(135deg, #ff9a9e, #fecfef);
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Arial', sans-serif;
+      color: #4a1b2b;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: fixed;
+      font-size: 18px;
+      color: #ff4b8b;
+      opacity: 0.7;
+      animation: floatUp 10s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      10% { opacity: 0.8; }
+      100% { transform: translateY(-120vh) scale(1.4); opacity: 0; }
     }
 
     .card {
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 50px 55px 40px;
+      border-radius: 26px;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 180, 203, 0.9);
+    }
+
+    .card::before {
+      content: "🌹";
+      position: absolute;
+      font-size: 42px;
+      left: -18px;
+      top: -18px;
+    }
+
+    .card::after {
+      content: "🌹";
+      position: absolute;
+      font-size: 42px;
+      right: -18px;
+      bottom: -18px;
+      transform: scaleX(-1);
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin-bottom: 22px;
+      font-size: 28px;
+      line-height: 1.4;
+      color: #b6114b;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #d12a5f;
+      margin-bottom: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .subtitle span {
+      font-size: 20px;
+    }
+
+    .buttons {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      min-width: 280px;
+      min-height: 70px;
+      margin-top: 10px;
     }
 
     button {
       font-size: 18px;
-      padding: 12px 25px;
+      padding: 12px 26px;
       border: none;
-      border-radius: 10px;
+      border-radius: 999px;
       cursor: pointer;
-      margin: 10px;
+      margin: 0;
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      font-weight: 600;
     }
 
     #yes {
-      background-color: #4CAF50;
+      background: linear-gradient(135deg, #ff4b8b, #ff6fb1);
       color: white;
+      transform: scale(1);
+    }
+
+    #yes:hover {
+      transform: scale(1.08) translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 75, 139, 0.35);
     }
 
     #no {
-      background-color: #f44336;
+      background: linear-gradient(135deg, #f44336, #ff7961);
       color: white;
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 80px;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -51,19 +136,68 @@
 
   <div class="card">
     <h1>Will you be my wife and stay with me for the rest of our lives? 💍❤️</h1>
-    <button id="yes" onclick="yesClicked()">Yes 💖</button>
-    <button id="no">No 😢</button>
+    <div class="subtitle">
+      <span>Try pressing “No”</span>
+      <span>😈</span>
+    </div>
+    <div class="buttons">
+      <button id="yes" onclick="yesClicked()">Yes 💖</button>
+      <button id="no">No 😢</button>
+    </div>
   </div>
 
   <script>
+    // Floating background hearts
+    for (let i = 0; i < 18; i++) {
+      const h = document.createElement("div");
+      h.className = "floating-heart";
+      h.textContent = "❤";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.bottom = Math.random() * -40 + "vh";
+      h.style.animationDelay = (Math.random() * 10).toFixed(2) + "s";
+      h.style.fontSize = 14 + Math.random() * 18 + "px";
+      document.body.appendChild(h);
+    }
+
+    const card = document.querySelector(".card");
+    const buttonsWrapper = document.querySelector(".buttons");
     const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
 
-    noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    let escapeCount = 0;
 
-      noBtn.style.left = `${x}px`;
-      noBtn.style.top = `${y}px`;
+    function moveNoButton() {
+      const wrapperRect = buttonsWrapper.getBoundingClientRect();
+      const noRect = noBtn.getBoundingClientRect();
+
+      const maxX = wrapperRect.width - noRect.width;
+      const maxY = wrapperRect.height - noRect.height;
+
+      // Random position inside the buttons wrapper
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    function mischievousEffects() {
+      escapeCount++;
+
+      // Shrink "No" a bit each time, but keep it visible
+      const noScale = Math.max(0.4, 1 - escapeCount * 0.06);
+      noBtn.style.transform = `translate(-50%, -50%) scale(${noScale})`;
+
+      // Make "Yes" larger and redder each time
+      const yesScale = 1 + Math.min(0.4, escapeCount * 0.08);
+      yesBtn.style.transform = `scale(${yesScale})`;
+      yesBtn.style.background = "linear-gradient(135deg, #ff1744, #ff5252)";
+      yesBtn.style.boxShadow = "0 12px 30px rgba(255, 23, 68, 0.5)";
+    }
+
+    noBtn.addEventListener("mousemove", () => {
+      moveNoButton();
+      mischievousEffects();
     });
 
     function yesClicked() {
@@ -73,11 +207,19 @@
           display:flex;
           justify-content:center;
           align-items:center;
-          background:linear-gradient(135deg,#ff9a9e,#fad0c4);
-          font-family:Arial;
-          text-align:center;">
-          <h1>YAAAY 💍❤️<br>
-          I love you forever 😘</h1>
+          background:
+            radial-gradient(circle at 10% 20%, rgba(255,192,203,0.9), transparent 60%),
+            radial-gradient(circle at 80% 10%, rgba(255,182,193,0.8), transparent 55%),
+            radial-gradient(circle at 20% 80%, rgba(255,105,180,0.7), transparent 55%),
+            linear-gradient(135deg,#ff9a9e,#fecfef);
+          font-family:'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Arial', sans-serif;
+          text-align:center;
+          color:#b6114b;">
+          <div>
+            <h1 style="font-size:34px; margin-bottom:10px;">YAAAY 💍❤️</h1>
+            <p style="font-size:22px;">I love you forever 😘</p>
+            <p style="margin-top:18px; font-size:16px;">You made the best decision, my love 💖</p>
+          </div>
         </div>
       `;
     }
